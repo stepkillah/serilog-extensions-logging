@@ -41,7 +41,7 @@ namespace Serilog.Extensions.Logging.Tests
 
             logger.Log(LogLevel.Information, 0, TestMessage, null, null);
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
         }
 
         [Fact]
@@ -143,7 +143,7 @@ namespace Serilog.Extensions.Logging.Tests
 
             logger.Log(LogLevel.Information, 0, "Test", exception, null);
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
             Assert.Same(exception, sink.Writes[0].Exception);
         }
 
@@ -157,7 +157,7 @@ namespace Serilog.Extensions.Logging.Tests
                 logger.Log(LogLevel.Information, 0, TestMessage, null, null);
             }
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
             Assert.True(sink.Writes[0].Properties.ContainsKey("Name"));
             Assert.Equal("\"pizza\"", sink.Writes[0].Properties["Name"].ToString());
         }
@@ -172,7 +172,7 @@ namespace Serilog.Extensions.Logging.Tests
                 logger.Log(LogLevel.Information, 0, TestMessage, null, null);
             }
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
             Assert.True(sink.Writes[0].Properties.ContainsKey("values"));
             Assert.Equal("\"System.Int32[]\"", sink.Writes[0].Properties["values"].ToString());
         }
@@ -191,7 +191,7 @@ namespace Serilog.Extensions.Logging.Tests
             }
 
             // Should retain the property of the most specific scope
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
             Assert.True(sink.Writes[0].Properties.ContainsKey("Name"));
             Assert.Equal("\"bacon\"", sink.Writes[0].Properties["Name"].ToString());
         }
@@ -209,7 +209,7 @@ namespace Serilog.Extensions.Logging.Tests
                 }
             }
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
             Assert.True(sink.Writes[0].Properties.ContainsKey("Name"));
             Assert.Equal("\"spaghetti\"", sink.Writes[0].Properties["Name"].ToString());
             Assert.True(sink.Writes[0].Properties.ContainsKey("LuckyNumber"));
@@ -261,10 +261,10 @@ namespace Serilog.Extensions.Logging.Tests
 
             logger.Log(LogLevel.Information, expected, "Test", null, null);
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
 
-            var eventId = (StructureValue) sink.Writes[0].Properties["EventId"];
-            var id = (ScalarValue) eventId.Properties.Single(p => p.Name == "Id").Value;
+            var eventId = (StructureValue)sink.Writes[0].Properties["EventId"];
+            var id = (ScalarValue)eventId.Properties.Single(p => p.Name == "Id").Value;
             Assert.Equal(42, id.Value);
         }
 
@@ -296,7 +296,7 @@ namespace Serilog.Extensions.Logging.Tests
                 logger.Log(LogLevel.Information, 0, TestMessage, null, null);
             }
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
             Assert.True(sink.Writes[0].Properties.ContainsKey("Person"));
 
             var person = (StructureValue)sink.Writes[0].Properties["Person"];
@@ -310,13 +310,13 @@ namespace Serilog.Extensions.Logging.Tests
         public void BeginScopeDestructuresObjectsWhenDestructurerIsUsedInDictionary()
         {
             var (logger, sink) = SetUp(LogLevel.Trace);
-            
-            using (logger.BeginScope(new Dictionary<string, object> {{ "@Person", new Person { FirstName = "John", LastName = "Smith" }}}))
+
+            using (logger.BeginScope(new Dictionary<string, object> { { "@Person", new Person { FirstName = "John", LastName = "Smith" } } }))
             {
                 logger.Log(LogLevel.Information, 0, TestMessage, null, null);
             }
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
             Assert.True(sink.Writes[0].Properties.ContainsKey("Person"));
 
             var person = (StructureValue)sink.Writes[0].Properties["Person"];
@@ -336,7 +336,7 @@ namespace Serilog.Extensions.Logging.Tests
                 logger.Log(LogLevel.Information, 0, TestMessage, null, null);
             }
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
             Assert.True(sink.Writes[0].Properties.ContainsKey("FirstName"));
         }
 
@@ -345,12 +345,12 @@ namespace Serilog.Extensions.Logging.Tests
         {
             var (logger, sink) = SetUp(LogLevel.Trace);
 
-            using (logger.BeginScope(new Dictionary<string, object> { { "FirstName", "John"}}))
+            using (logger.BeginScope(new Dictionary<string, object> { { "FirstName", "John" } }))
             {
                 logger.Log(LogLevel.Information, 0, TestMessage, null, null);
             }
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
             Assert.True(sink.Writes[0].Properties.ContainsKey("FirstName"));
         }
 
@@ -365,7 +365,7 @@ namespace Serilog.Extensions.Logging.Tests
                 logger.Log(LogLevel.Information, 0, TestMessage, null, null);
             }
 
-            Assert.Equal(1, sink.Writes.Count);
+            Assert.Single(sink.Writes);
 
             Assert.True(sink.Writes[0].Properties.TryGetValue(SerilogLoggerProvider.ScopePropertyName, out var scopeValue));
             var sequence = Assert.IsType<SequenceValue>(scopeValue);
